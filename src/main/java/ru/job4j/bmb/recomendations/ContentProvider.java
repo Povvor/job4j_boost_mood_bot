@@ -1,4 +1,4 @@
-package ru.job4j.recomendations;
+package ru.job4j.bmb.recomendations;
 
 public interface ContentProvider {
 }
