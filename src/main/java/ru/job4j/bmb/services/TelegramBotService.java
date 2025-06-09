@@ -30,6 +30,6 @@ public class TelegramBotService implements BeanNameAware {
 
     @Override
     public void setBeanName(String name) {
-        System.out.println("Имя:" + name);
+        System.out.println("Имя: " + name);
     }
 }
