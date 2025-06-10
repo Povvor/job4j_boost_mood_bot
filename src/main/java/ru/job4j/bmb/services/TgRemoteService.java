@@ -17,9 +17,7 @@ import java.util.List;
 @Service
 public class TgRemoteService extends TelegramLongPollingBot {
 
-    private final String botName;
-    private final String botToken;
-    private final HashMap MOOD_RESP = new HashMap<>() {{
+    private static final HashMap MOOD_RESP = new HashMap<>() {{
         put("lost_sock", "Носки — это коварные создания. Но не волнуйся, второй обязательно найдётся!");
         put("cucumber", "Огурец тоже дело серьёзное! Главное, не мариноваться слишком долго.");
         put("dance_ready", "Супер! Танцуй, как будто никто не смотрит. Или, наоборот, как будто все смотрят!");
@@ -27,6 +25,8 @@ public class TgRemoteService extends TelegramLongPollingBot {
         put("sleepy", "Пора на боковую! Даже супергерои отдыхают, ты не исключение.");
     }};
 
+    private final String botName;
+    private final String botToken;
 
     public TgRemoteService(@Value("${telegram.bot.name}") String botName,
                            @Value("${telegram.bot.token}") String botToken) {
@@ -91,6 +91,5 @@ public class TgRemoteService extends TelegramLongPollingBot {
         inline.setCallbackData(data);
         return inline;
     }
-
 
 }
