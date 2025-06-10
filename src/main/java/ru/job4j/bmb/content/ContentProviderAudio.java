@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
-
 @Component
 public class ContentProviderAudio implements ContentProvider {
 
