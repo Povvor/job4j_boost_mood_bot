@@ -2,10 +2,9 @@ package ru.job4j.bmb.recomendations;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.content.ContentProvider;
-
 import java.util.List;
 import java.util.Random;
 
