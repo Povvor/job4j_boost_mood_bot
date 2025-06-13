@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.job4j.bmb.model.User;
-import ru.job4j.bmb.repository.UserActualRepository;
 import ru.job4j.bmb.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
 @Service
 public class TgRemoteService extends TelegramLongPollingBot {
 
-    private static final HashMap MOOD_RESP = new HashMap<>() {{
+    private static final HashMap<String, String> MOOD_RESP = new HashMap<>() {{
         put("lost_sock", "Носки — это коварные создания. Но не волнуйся, второй обязательно найдётся!");
         put("cucumber", "Огурец тоже дело серьёзное! Главное, не мариноваться слишком долго.");
         put("dance_ready", "Супер! Танцуй, как будто никто не смотрит. Или, наоборот, как будто все смотрят!");
