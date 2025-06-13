@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Profile("test")
+@Profile("!test")
 @Repository
-public class UserFakeRepository implements UserRepository {
+public class UserActualRepository implements UserRepository {
     private Map<Long, User> userMap = new HashMap<>();
 
     @Override
