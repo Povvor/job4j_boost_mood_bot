@@ -87,7 +87,7 @@ public class Main {
                 new Mood("Воодушевленное настроение \uD83C\uDF1F", true),
                 "Потрясающе! Вы в состоянии внутреннего мира и гармонии."));
         data.add(new MoodContent(
-                new Mood("В состоянии комфорта ☺\uFE0F", true),
+                new Mood("В состоянии комфорта ☺️", true),
                 "Отлично! Вы чувствуете себя уютно и спокойно."));
         data.add(new MoodContent(
                 new Mood("Легкое волнение \uD83C\uDF88", true),
