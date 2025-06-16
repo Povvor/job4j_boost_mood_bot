@@ -37,7 +37,7 @@ public class MoodService {
         this.achievementRepository = achievementRepository;
     }
 
-    public Content chooseMood(User user, Long moodId) {
+    public Content choseMood(User user, Long moodId) {
         return recommendationEngine.recommendFor(user.getChatId(), moodId);
     }
 
