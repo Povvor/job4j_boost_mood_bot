@@ -91,7 +91,6 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
         }
     }
 
-
     private void sentMurkup(Content content) {
         SendMessage message = new SendMessage();
         message.setChatId(content.getChatId());
