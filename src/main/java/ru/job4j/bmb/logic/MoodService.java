@@ -1,9 +1,5 @@
 package ru.job4j.bmb.logic;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.model.Achievement;
@@ -13,12 +9,11 @@ import ru.job4j.bmb.recomendations.RecommendationEngine;
 import ru.job4j.bmb.repository.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class MoodService {
@@ -52,34 +47,29 @@ public class MoodService {
 
     public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
         User user = userRepository.findById(clientId).orElseThrow();
-        long sevenDays = 7 * 24 * 60 * 60 * 1000;
-        StringBuilder builder = new StringBuilder();
+        long sevenDays = 7L * 24 * 60 * 60 * 1000;
         Content content = new Content(chatId);
-        for (MoodLog moodLog : moodLogRepository.findAll()) {
-           long created = moodLog.getCreatedAt();
-            if (moodLog.getUser() == user && System.currentTimeMillis() - created >= sevenDays)  {
-                builder.append(formatter.format(Instant.ofEpochMilli(created)) + " " +  moodLog.getMood() + "\n");
-            }
-        }
-        content.setText(builder.toString());
-                return Optional.of(content);
+
+        var logs = moodLogRepository.findAll().stream()
+                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() >= sevenDays)
+                .filter(userToFilter -> userToFilter.getUser().equals(user))
+                .toList();
+
+        content.setText(formatMoodLogs(logs, "Лог настроения за 7 дней."));
+        return Optional.of(content);
     }
 
     public Optional<Content> monthMoodLogCommand(long chatId, Long clientId) {
         User user = userRepository.findById(clientId).orElseThrow();
         long thirtyDays = 30L * 24 * 60 * 60 * 1000;
-        StringBuilder builder = new StringBuilder();
         Content content = new Content(chatId);
-        for (MoodLog moodLog : moodLogRepository.findAll()) {
-            long created = moodLog.getCreatedAt();
-            if (moodLog.getUser() == user && System.currentTimeMillis() - created >= thirtyDays)  {
-                builder.append(formatter.format(Instant.ofEpochMilli(created)))
-                        .append(' ')
-                        .append(moodLog.getMood())
-                        .append("\n");
-            }
-        }
-        content.setText(builder.toString());
+
+        var logs = moodLogRepository.findAll().stream()
+                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() >= thirtyDays)
+                .filter(userToFilter -> userToFilter.getUser().equals(user))
+                .toList();
+
+        content.setText(formatMoodLogs(logs, "Лог настроения за 30 дней."));
         return Optional.of(content);
     }
 
@@ -97,15 +87,15 @@ public class MoodService {
 
     public Optional<Content> awards(long chatId, Long clientId) {
         User user = userRepository.findById(clientId).orElseThrow();
-        long thirtyDays = 30L * 24 * 60 * 60 * 1000;
         StringBuilder builder = new StringBuilder();
         Content content = new Content(chatId);
         builder.append("Ваши награды: \n");
-        for (Achievement achievement : achievementRepository.findAll()) {
-            if (achievement.getUser() == user)  {
-                builder.append(achievement.getAward()).append("\n");
-            }
-        }
+
+        achievementRepository.findAll().stream()
+                .filter(achievement -> achievement.getUser().equals(user))
+                .map(Achievement::getAward)
+                .forEach(award -> builder.append(award).append("\n"));
+
         content.setText(builder.toString());
         return Optional.of(content);
     }
