@@ -28,6 +28,8 @@ public class BotCommandHandler {
     }
 
     Optional<Content> commands(Message message) {
+        System.out.println("Commands received");
+        System.out.println(message.getText());
         return switch (message.getText()) {
             case "/start" -> handleStartCommand(message.getChatId(), message.getFrom().getId());
             case "/week_mood_log" -> moodService.weekMoodLogCommand(message.getChatId(), message.getFrom().getId());
@@ -39,7 +41,7 @@ public class BotCommandHandler {
 
     Optional<Content> handleCallback(CallbackQuery callback) {
         var moodId = Long.valueOf(callback.getData());
-        var user = userRepository.findById(callback.getFrom().getId());
+        var user = userRepository.findByClientId(callback.getFrom().getId());
         return user.map(value -> moodService.choseMood(value, moodId));
     }
 
@@ -47,7 +49,12 @@ public class BotCommandHandler {
         var user = new User();
         user.setClientId(clientId);
         user.setChatId(chatId);
-        userRepository.save(user);
+        System.out.println(user.getClientId());
+        if (userRepository.existsByClientId(user.getClientId())) {
+            System.out.println("User уже есть!");
+        } else {
+            System.out.println(userRepository.save(user));
+        }
         var content = new Content(user.getChatId());
         content.setText("Как настроение?");
         content.setMarkup(tgUI.buildButtons());

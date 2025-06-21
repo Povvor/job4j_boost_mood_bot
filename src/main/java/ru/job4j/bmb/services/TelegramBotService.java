@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.exception.SentContentException;
-import ru.job4j.bmb.model.User;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.UserRepository;
 
@@ -39,22 +38,12 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasCallbackQuery()) {
-            var data = update.getCallbackQuery().getData();
-            var chatId = update.getCallbackQuery().getMessage().getChatId();
-            long longData = Long.parseLong(data);
-            var mood = moodRepository.findById(longData);
-            send(new SendMessage(String.valueOf(chatId), mood.orElseThrow().getText()));
+            Content content = handler.handleCallback(update.getCallbackQuery()).orElseThrow();
+            sent(content);
         }
         if (update.hasMessage() && update.getMessage().hasText()) {
             var message = update.getMessage();
-            if ("/start".equals(message.getText())) {
-                long chatId = message.getChatId();
-                var user = new User();
-                user.setClientId(message.getFrom().getId());
-                user.setChatId(chatId);
-                userRepository.save(user);
-                send(sendButtons(chatId));
-            }
+            sent(handler.commands(message).orElseThrow());
         }
     }
 

@@ -5,8 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.File;
 
-@Component
 public class ContentProviderImage implements ContentProvider {
+
     @Override
     public Content byMood(Long chatId, Long moodId) {
         var content = new Content(chatId);

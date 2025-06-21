@@ -1,5 +1,6 @@
 package ru.job4j.bmb.logic;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.model.Achievement;
@@ -9,11 +10,12 @@ import ru.job4j.bmb.recomendations.RecommendationEngine;
 import ru.job4j.bmb.repository.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 @Service
 public class MoodService {
@@ -22,6 +24,7 @@ public class MoodService {
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
     private final MoodRepository moodRepository;
+    private final ApplicationEventPublisher publisher;
     private final DateTimeFormatter formatter = DateTimeFormatter
             .ofPattern("dd-MM-yyyy HH:mm")
             .withZone(ZoneId.systemDefault());
@@ -30,19 +33,36 @@ public class MoodService {
                        RecommendationEngine recommendationEngine,
                        UserRepository userRepository,
                        AchievementRepository achievementRepository,
-                       MoodRepository moodRepository) {
+                       MoodRepository moodRepository, ApplicationEventPublisher publisher) {
         this.moodLogRepository = moodLogRepository;
         this.recommendationEngine = recommendationEngine;
         this.userRepository = userRepository;
         this.achievementRepository = achievementRepository;
         this.moodRepository = moodRepository;
+        this.publisher = publisher;
     }
 
     public Content choseMood(User user, Long moodId) {
+        if (didUserVoteToday(user)) {
+            Content content = new Content(user.getChatId());
+            content.setText("Вы уже выбирали настроение сегодня!");
+            return content;
+        }
         moodLogRepository.save(new MoodLog(user,
                 moodRepository.findById(moodId).orElseThrow(),
                 System.currentTimeMillis()));
+        publisher.publishEvent(new UserEvent(this, user));
         return recommendationEngine.recommendFor(user.getChatId(), moodId);
+    }
+
+    public boolean didUserVoteToday(User user) {
+        var startOfDay = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        return moodLogRepository.findAll().stream()
+                .filter(moodLog -> moodLog.getUser().getId().equals(user.getId()))
+                .anyMatch(moodLog -> moodLog.getCreatedAt() >= startOfDay);
     }
 
     public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
@@ -98,5 +118,14 @@ public class MoodService {
 
         content.setText(builder.toString());
         return Optional.of(content);
+    }
+
+    public long goodMoodStreak(MoodLogRepository moodLogRepository, User user) {
+        var moodLogs = moodLogRepository.findAll();
+        return moodLogs.stream()
+                .filter(log -> log.getUser().equals(user))
+                .sorted(Comparator.comparing(MoodLog::getCreatedAt).reversed())
+                .takeWhile(log -> log.getMood().isGood())
+                .count();
     }
 }
