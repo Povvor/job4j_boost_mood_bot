@@ -17,6 +17,14 @@ public class User {
     @Column(name = "chat_id")
     private long chatId;
 
+    public User() {
+    }
+
+    public User(long clientId, long chatId) {
+        this.clientId = clientId;
+        this.chatId = chatId;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -43,18 +51,15 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         User user = (User) o;
-        return Objects.equals(id, user.id);
+        return clientId == user.clientId && Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, clientId);
     }
 }

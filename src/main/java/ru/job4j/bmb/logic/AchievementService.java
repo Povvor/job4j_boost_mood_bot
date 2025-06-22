@@ -14,6 +14,7 @@ import ru.job4j.bmb.repository.AwardRepository;
 import ru.job4j.bmb.repository.MoodLogRepository;
 import ru.job4j.bmb.services.TelegramBotService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -41,18 +42,26 @@ public class AchievementService implements ApplicationListener<UserEvent> {
     @Transactional
     @Override
     public void onApplicationEvent(UserEvent event) {
-        var user = event.getUser();
-        var awards = awardsToAchieve(user);
+        List<Content> contents = grantAndNotify(event.getUser());
+        for (Content content : contents) {
+            telegramBotService.sent(content);
+        }
+    }
 
+    public List<Content> grantAndNotify(User user) {
+        List<Content> contents = new ArrayList<>();
+        var awards = awardsToAchieve(user);
         for (Award achievement : awards) {
-            achievementRepository.save(new Achievement(System.currentTimeMillis(), user, achievement));
             Content content = new Content(user.getChatId());
+            achievementRepository.save(new Achievement(System.currentTimeMillis(), user, achievement));
             String text = ("У вас новое достижение!!!"
                     + "\n" + achievement.getTitle()
                     + "\n" + achievement.getDescription());
             content.setText(text);
-            telegramBotService.sent(content);
+            contents.add(content);
         }
+        return contents;
+
     }
 
     public List<Award> awardsToAchieve(User user) {
