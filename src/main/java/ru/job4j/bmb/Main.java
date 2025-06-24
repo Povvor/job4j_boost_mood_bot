@@ -31,10 +31,8 @@ public class Main {
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
         return args -> {
             var bot = ctx.getBean(TelegramBotService.class);
-            var botsApi = new TelegramBotsApi(DefaultBotSession.class);
             try {
-                botsApi.registerBot(bot);
-                System.out.println("Бот успешно зарегистрирован");
+                bot.register();
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
