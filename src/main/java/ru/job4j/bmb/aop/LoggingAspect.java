@@ -19,7 +19,11 @@ public class LoggingAspect {
     @Before("serviceLayer()")
     public void logBefore(JoinPoint joinPoint) {
         System.out.println("Вызов метода: " + joinPoint.getSignature().getName());
-        System.out.println("Переданые аргументы:");
-        Arrays.stream(joinPoint.getArgs()).map(Object::toString).forEach(System.out::println);
+        if (joinPoint.getArgs().length > 0) {
+            System.out.println("Переданые аргументы:");
+            Arrays.stream(joinPoint.getArgs()).map(Object::toString).forEach(System.out::println);
+        } else {
+            System.out.println("Переданные аргументы отсутсвуют.");
+        }
     }
 }
