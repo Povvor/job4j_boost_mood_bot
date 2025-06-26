@@ -127,7 +127,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
         }
     }
 
-    protected void send(SendMessage message) {
+    public void send(SendMessage message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
