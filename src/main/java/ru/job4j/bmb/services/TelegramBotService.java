@@ -1,10 +1,7 @@
 package ru.job4j.bmb.services;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -18,7 +15,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.job4j.bmb.conditions.OnProdCondition;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.exception.SentContentException;
-import ru.job4j.bmb.logic.AchievementService;
 import ru.job4j.bmb.logic.ReminderService;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.UserRepository;
@@ -52,7 +48,6 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
 
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println("<UNK> <UNK> <UNK> <UNK> <UNK> <UNK>.");
         if (update.hasCallbackQuery()) {
             Content content = handler.handleCallback(update.getCallbackQuery()).orElseThrow();
             sent(content);
@@ -89,7 +84,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
         }
     }
 
-    @Scheduled(fixedRateString = "${advice.alert.period}")
+    @Scheduled(cron = "${advice.alert.time}")
     public void adviceUsers() {
         List<Content> contents = reminderService.adviceUsers();
         for (Content content : contents) {
@@ -156,14 +151,6 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-    }
-
-    public SendMessage sendButtons(long chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Как настроение сегодня?");
-        message.setReplyMarkup(tgUI.buildButtons());
-        return message;
     }
 
     public void register() throws TelegramApiException {
