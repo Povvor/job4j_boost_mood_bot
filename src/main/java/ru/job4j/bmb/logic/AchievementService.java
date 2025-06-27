@@ -12,7 +12,7 @@ import ru.job4j.bmb.model.User;
 import ru.job4j.bmb.repository.AchievementRepository;
 import ru.job4j.bmb.repository.AwardRepository;
 import ru.job4j.bmb.repository.MoodLogRepository;
-import ru.job4j.bmb.services.TelegramBotService;
+import ru.job4j.bmb.services.SentContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +21,18 @@ import java.util.function.Predicate;
 @Component
 public class AchievementService implements ApplicationListener<UserEvent> {
 
-    TelegramBotService telegramBotService;
+    SentContent sentContent;
     MoodService moodService;
     MoodLogRepository moodLogRepository;
     AwardRepository awardRepository;
     AchievementRepository achievementRepository;
 
-    public AchievementService(TelegramBotService telegramBotService,
+    public AchievementService(SentContent sentContent,
                               MoodService moodService,
                               MoodLogRepository moodLogRepository,
                               AwardRepository awardRepository,
                               AchievementRepository achievementRepository) {
-        this.telegramBotService = telegramBotService;
+        this.sentContent = sentContent;
         this.moodService = moodService;
         this.moodLogRepository = moodLogRepository;
         this.awardRepository = awardRepository;
@@ -44,7 +44,7 @@ public class AchievementService implements ApplicationListener<UserEvent> {
     public void onApplicationEvent(UserEvent event) {
         List<Content> contents = grantAndNotify(event.getUser());
         for (Content content : contents) {
-            telegramBotService.sent(content);
+            sentContent.sent(content);
         }
     }
 

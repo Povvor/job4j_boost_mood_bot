@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Service
 public class MoodService {
+    private final ReminderService reminderService;
     private final MoodLogRepository moodLogRepository;
     private final RecommendationEngine recommendationEngine;
     private final UserRepository userRepository;
@@ -29,11 +30,12 @@ public class MoodService {
             .ofPattern("dd-MM-yyyy HH:mm")
             .withZone(ZoneId.systemDefault());
 
-    public MoodService(MoodLogRepository moodLogRepository,
+    public MoodService(ReminderService reminderService, MoodLogRepository moodLogRepository,
                        RecommendationEngine recommendationEngine,
                        UserRepository userRepository,
                        AchievementRepository achievementRepository,
                        MoodRepository moodRepository, ApplicationEventPublisher publisher) {
+        this.reminderService = reminderService;
         this.moodLogRepository = moodLogRepository;
         this.recommendationEngine = recommendationEngine;
         this.userRepository = userRepository;

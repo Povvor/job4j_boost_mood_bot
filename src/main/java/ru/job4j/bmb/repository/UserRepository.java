@@ -14,4 +14,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
     boolean existsByClientId(long clientId);
 
     Optional<User> findByClientId(long clientId);
+
+    User findByChatId(long chatId);
+
 }

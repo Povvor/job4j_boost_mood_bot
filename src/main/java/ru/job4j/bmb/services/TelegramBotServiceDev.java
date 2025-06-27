@@ -18,6 +18,7 @@ import ru.job4j.bmb.conditions.OnDevCondition;
 import ru.job4j.bmb.conditions.OnProdCondition;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.exception.SentContentException;
+import ru.job4j.bmb.logic.ReminderService;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.UserRepository;
 
@@ -29,8 +30,11 @@ import java.util.Scanner;
 @Primary
 public class TelegramBotServiceDev extends TelegramBotService implements SentContent {
 
-    public TelegramBotServiceDev(BotCommandHandler handler, UserRepository userRepository, TgUI tgUI, MoodContentRepository moodRepository) {
-        super("0", "0", handler, userRepository, tgUI, moodRepository);
+    public TelegramBotServiceDev(BotCommandHandler handler,
+                                 UserRepository userRepository, TgUI tgUI,
+                                 MoodContentRepository moodRepository,
+                                 ReminderService reminderService) {
+        super("0", "0", handler, userRepository, tgUI, moodRepository, reminderService);
     }
 
     @Override

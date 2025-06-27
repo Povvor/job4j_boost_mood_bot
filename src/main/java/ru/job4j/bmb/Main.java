@@ -9,9 +9,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.job4j.bmb.model.Advice;
 import ru.job4j.bmb.model.Award;
 import ru.job4j.bmb.model.Mood;
 import ru.job4j.bmb.model.MoodContent;
+import ru.job4j.bmb.repository.AdviceRepository;
 import ru.job4j.bmb.repository.AwardRepository;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.MoodRepository;
@@ -42,7 +44,8 @@ public class Main {
     @Bean
     CommandLineRunner loadDatabase(MoodRepository moodRepository,
                                    MoodContentRepository moodContentRepository,
-                                   AwardRepository awardRepository) {
+                                   AwardRepository awardRepository,
+                                   AdviceRepository adviceRepository) {
         return args -> {
             var moods = moodRepository.findAll();
             if (!moods.isEmpty()) {
@@ -53,6 +56,9 @@ public class Main {
             moodContentRepository.saveAll(data);
             var awards = initAwards();
             awardRepository.saveAll(awards);
+            var advices = initAdvices();
+            adviceRepository.saveAll(advices);
+
         };
     }
 
@@ -108,6 +114,21 @@ public class Main {
         data.add(new MoodContent(
                 new Mood("Раздраженное настроение \uD83D\uDE20", false),
                 "Попробуйте успокоиться и найти причину раздражения, чтобы исправить ситуацию."));
+        return data;
+    }
+
+    public static ArrayList<Advice> initAdvices() {
+        var data = new ArrayList<Advice>();
+        data.add(new Advice("Поделись настроением с другими — скажи что-то приятное близким или даже случайным людям. Позитив заразителен.", true));
+        data.add(new Advice("Занимайся творчеством — попробуй что-то создать: нарисуй, напиши пост, сделай смешную фотку или приготовь что-то необычное.", true));
+        data.add(new Advice("Запомни этот момент — сделай заметку, селфи или аудиозапись, чтобы потом вспомнить, что именно подняло тебе настроение.", true));
+        data.add(new Advice("Сделай что-то сложное — сейчас проще браться за задачи, которые давно откладывал: используй подъем энергии с пользой.", true));
+        data.add(new Advice("Побалуй себя — если давно хотел попробовать что-то новенькое или просто съесть вкусняшку, сейчас отличный момент!", true));
+        data.add(new Advice("Сделай что-то маленькое — выполни простое действие: прими душ, убери стол, прогуляйся на 5 минут. Маленькие шаги помогают выбраться из апатии.", false));
+        data.add(new Advice("Ограничь новости и соцсети — информационный шум легко усугубляет негатив. Лучше сделай цифровой детокс на пару часов.", false));
+        data.add(new Advice("Поговори с кем-то, кому доверяешь — иногда даже короткий разговор помогает взглянуть на ситуацию иначе.", false));
+        data.add(new Advice("Позаботься о теле — выпей воды, поспи, сделай растяжку или дыхательную практику. Тело и мозг связаны крепче, чем кажется.", false));
+        data.add(new Advice("Не подавляй эмоции — позволь себе побыть в этом состоянии, не ругай себя, не требуй радости здесь и сейчас.", false));
         return data;
     }
 }

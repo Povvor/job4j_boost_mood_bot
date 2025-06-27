@@ -1,9 +1,11 @@
 package ru.job4j.bmb.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -16,8 +18,12 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.job4j.bmb.conditions.OnProdCondition;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.exception.SentContentException;
+import ru.job4j.bmb.logic.AchievementService;
+import ru.job4j.bmb.logic.ReminderService;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @Conditional(OnProdCondition.class)
@@ -27,19 +33,21 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
     private final UserRepository userRepository;
     private final TgUI tgUI;
     private final MoodContentRepository moodRepository;
+    private final ReminderService reminderService;
 
     public TelegramBotService(@Value("${telegram.bot.name}") String botName,
                               @Value("${telegram.bot.token}") String botToken,
                               BotCommandHandler handler,
                               UserRepository userRepository,
                               TgUI tgUI,
-                              MoodContentRepository moodRepository) {
+                              MoodContentRepository moodRepository, ReminderService reminderService) {
         super(botToken);
         this.handler = handler;
         this.botName = botName;
         this.userRepository = userRepository;
         this.tgUI = tgUI;
         this.moodRepository = moodRepository;
+        this.reminderService = reminderService;
     }
 
     @Override
@@ -71,7 +79,22 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
         } else {
             sentText(content);
         }
+    }
 
+    @Scheduled(fixedRateString = "${recommendation.alert.period}")
+    public void remindUsers() {
+        List<Content> contents = reminderService.remindUsers();
+        for (Content content : contents) {
+            sent(content);
+        }
+    }
+
+    @Scheduled(fixedRateString = "${advice.alert.period}")
+    public void adviceUsers() {
+        List<Content> contents = reminderService.adviceUsers();
+        for (Content content : contents) {
+            sent(content);
+        }
     }
 
     private void sentAudio(Content content) {

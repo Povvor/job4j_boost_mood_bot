@@ -17,7 +17,18 @@ public class User {
     @Column(name = "chat_id")
     private long chatId;
 
+    @Column(name = "advicesEnabled")
+    private boolean advicesEnabled = true;
+
     public User() {
+    }
+
+    public boolean isAdvicesEnabled() {
+        return advicesEnabled;
+    }
+
+    public void setAdvicesEnabled(boolean advicesEnabled) {
+        this.advicesEnabled = advicesEnabled;
     }
 
     public User(long clientId, long chatId) {
