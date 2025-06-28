@@ -19,10 +19,8 @@ import java.util.Optional;
 
 @Service
 public class MoodService {
-    private final ReminderService reminderService;
     private final MoodLogRepository moodLogRepository;
     private final RecommendationEngine recommendationEngine;
-    private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
     private final MoodRepository moodRepository;
     private final ApplicationEventPublisher publisher;
@@ -30,15 +28,12 @@ public class MoodService {
             .ofPattern("dd-MM-yyyy HH:mm")
             .withZone(ZoneId.systemDefault());
 
-    public MoodService(ReminderService reminderService, MoodLogRepository moodLogRepository,
+    public MoodService(MoodLogRepository moodLogRepository,
                        RecommendationEngine recommendationEngine,
-                       UserRepository userRepository,
                        AchievementRepository achievementRepository,
                        MoodRepository moodRepository, ApplicationEventPublisher publisher) {
-        this.reminderService = reminderService;
         this.moodLogRepository = moodLogRepository;
         this.recommendationEngine = recommendationEngine;
-        this.userRepository = userRepository;
         this.achievementRepository = achievementRepository;
         this.moodRepository = moodRepository;
         this.publisher = publisher;
@@ -106,19 +101,29 @@ public class MoodService {
         return sb.toString();
     }
 
-    public Optional<Content> awards(long chatId, Long clientId) {
-        User user = userRepository.findById(clientId).orElseThrow();
+    public Optional<Content> awards(long chatId, User user) {
         StringBuilder builder = new StringBuilder();
         Content content = new Content(chatId);
         builder.append("Ваши награды: \n");
-
-        achievementRepository.findAll().stream()
+        var usersAwards = achievementRepository.findAll().stream()
                 .filter(achievement -> achievement.getUser().equals(user))
-                .map(Achievement::getAward)
-                .forEach(award -> builder.append(award).append("\n"));
-
-        content.setText(builder.toString());
+                .toList();
+        builder.append(formatAward(usersAwards));
+        content.setText(builder.toString()); 
         return Optional.of(content);
+    }
+
+    private String formatAward(List<Achievement> achievements) {
+        var sb = new StringBuilder();
+        if (achievements.isEmpty()) {
+            return "У вас пока нет достижений(";
+        } else {
+            achievements.forEach(log -> {
+                String formattedDate = formatter.format(Instant.ofEpochMilli(log.getCreateAt()));
+                sb.append(formattedDate).append(": ").append(log.getAward().getDescription()).append("\n");
+            });
+        }
+        return sb.toString();
     }
 
     public long goodMoodStreak(MoodLogRepository moodLogRepository, User user) {

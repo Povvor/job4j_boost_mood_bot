@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.logic.AdviceService;
 import ru.job4j.bmb.logic.MoodService;
-import ru.job4j.bmb.logic.ReminderService;
 import ru.job4j.bmb.model.User;
 import ru.job4j.bmb.repository.UserRepository;
 
@@ -39,7 +38,7 @@ public class BotCommandHandler {
             case "/start" -> handleStartCommand(message.getChatId(), message.getFrom().getId());
             case "/week_mood_log" -> moodService.weekMoodLogCommand(message.getChatId(), userRepository.findByChatId(message.getChatId()));
             case "/month_mood_log" -> moodService.monthMoodLogCommand(message.getChatId(), userRepository.findByChatId(message.getChatId()));
-            case "/award" -> moodService.awards(message.getChatId(), message.getFrom().getId());
+            case "/award" -> moodService.awards(message.getChatId(), userRepository.findByChatId(message.getChatId()));
             case "/switch_advice" -> adviceService.switchAdvice(userRepository.findByChatId(message.getChatId()));
             case "/daily_advice" -> adviceService.adviceUser(userRepository.findByChatId(message.getChatId()));
             default -> Optional.empty();
