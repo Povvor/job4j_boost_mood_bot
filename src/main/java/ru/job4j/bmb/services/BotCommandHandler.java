@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.job4j.bmb.content.Content;
+import ru.job4j.bmb.logic.AdviceService;
 import ru.job4j.bmb.logic.MoodService;
 import ru.job4j.bmb.logic.ReminderService;
 import ru.job4j.bmb.model.User;
@@ -20,14 +21,16 @@ public class BotCommandHandler {
     private final MoodService moodService;
     private final TgUI tgUI;
     private final ReminderService reminderService;
+    private final AdviceService adviceService;
 
     public BotCommandHandler(UserRepository userRepository,
                              MoodService moodService,
-                             TgUI tgUI, ReminderService reminderService) {
+                             TgUI tgUI, ReminderService reminderService, AdviceService adviceService) {
         this.userRepository = userRepository;
         this.moodService = moodService;
         this.tgUI = tgUI;
         this.reminderService = reminderService;
+        this.adviceService = adviceService;
     }
 
     Optional<Content> commands(Message message) {
@@ -39,8 +42,8 @@ public class BotCommandHandler {
             case "/week_mood_log" -> moodService.weekMoodLogCommand(message.getChatId(), message.getFrom().getId());
             case "/month_mood_log" -> moodService.monthMoodLogCommand(message.getChatId(), message.getFrom().getId());
             case "/award" -> moodService.awards(message.getChatId(), message.getFrom().getId());
-            case "/switch_advice" -> reminderService.switchAdvice(userRepository.findByChatId(message.getChatId()));
-            case "/daily_advice" -> reminderService.adviceUser(userRepository.findByChatId(message.getChatId()));
+            case "/switch_advice" -> adviceService.switchAdvice(userRepository.findByChatId(message.getChatId()));
+            case "/daily_advice" -> adviceService.adviceUser(userRepository.findByChatId(message.getChatId()));
             default -> Optional.empty();
         };
     }

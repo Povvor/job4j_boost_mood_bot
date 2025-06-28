@@ -1,28 +1,13 @@
 package ru.job4j.bmb.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.job4j.bmb.conditions.OnDevCondition;
-import ru.job4j.bmb.conditions.OnProdCondition;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.exception.SentContentException;
+import ru.job4j.bmb.logic.AdviceService;
 import ru.job4j.bmb.logic.ReminderService;
-import ru.job4j.bmb.repository.MoodContentRepository;
-import ru.job4j.bmb.repository.UserRepository;
-
-import java.util.Scanner;
 
 @Service
 @Conditional(OnDevCondition.class)
@@ -30,11 +15,8 @@ import java.util.Scanner;
 @Primary
 public class TelegramBotServiceDev extends TelegramBotService implements SentContent {
 
-    public TelegramBotServiceDev(BotCommandHandler handler,
-                                 UserRepository userRepository, TgUI tgUI,
-                                 MoodContentRepository moodRepository,
-                                 ReminderService reminderService) {
-        super("0", "0", handler, userRepository, tgUI, moodRepository, reminderService);
+    public TelegramBotServiceDev(BotCommandHandler handler, ReminderService reminderService, AdviceService adviceService) {
+        super("0", "0", handler, reminderService, adviceService);
     }
 
     @Override
@@ -53,7 +35,7 @@ public class TelegramBotServiceDev extends TelegramBotService implements SentCon
     }
 
     @Override
-    public void register() throws TelegramApiException {
+    public void register() {
         System.out.println("Тестовый бот запущен.");
 }
 }

@@ -15,9 +15,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.job4j.bmb.conditions.OnProdCondition;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.exception.SentContentException;
+import ru.job4j.bmb.logic.AdviceService;
 import ru.job4j.bmb.logic.ReminderService;
-import ru.job4j.bmb.repository.MoodContentRepository;
-import ru.job4j.bmb.repository.UserRepository;
 
 import java.util.List;
 
@@ -26,24 +25,18 @@ import java.util.List;
 public class TelegramBotService extends TelegramLongPollingBot implements SentContent {
     private final BotCommandHandler handler;
     private final String botName;
-    private final UserRepository userRepository;
-    private final TgUI tgUI;
-    private final MoodContentRepository moodRepository;
     private final ReminderService reminderService;
+    private final AdviceService adviceService;
 
     public TelegramBotService(@Value("${telegram.bot.name}") String botName,
                               @Value("${telegram.bot.token}") String botToken,
                               BotCommandHandler handler,
-                              UserRepository userRepository,
-                              TgUI tgUI,
-                              MoodContentRepository moodRepository, ReminderService reminderService) {
+                              ReminderService reminderService, AdviceService adviceService) {
         super(botToken);
         this.handler = handler;
         this.botName = botName;
-        this.userRepository = userRepository;
-        this.tgUI = tgUI;
-        this.moodRepository = moodRepository;
         this.reminderService = reminderService;
+        this.adviceService = adviceService;
     }
 
     @Override
@@ -86,7 +79,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements SentCo
 
     @Scheduled(cron = "${advice.alert.time}")
     public void adviceUsers() {
-        List<Content> contents = reminderService.adviceUsers();
+        List<Content> contents = adviceService.adviceUsers();
         for (Content content : contents) {
             sent(content);
         }

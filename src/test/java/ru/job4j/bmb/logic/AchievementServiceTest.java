@@ -3,7 +3,6 @@ package ru.job4j.bmb.logic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.model.Mood;
@@ -19,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest
-
 class AchievementServiceTest {
 
     @Autowired
@@ -33,8 +31,8 @@ class AchievementServiceTest {
 
     private final Mood testMoodGood = new Mood("Good", true);
     private final Mood testMoodBad = new Mood("Bad", false);
-    private final User testUser1 = new User(100, 1);
-    private final User testUser2 = new User(200, 2);
+    private final User testUser1 = new User(1L, 100, 1);
+    private final User testUser2 = new User(2L, 200, 2);
 
     private static long calculateTime(int minusDays) {
         return LocalDateTime.now()
