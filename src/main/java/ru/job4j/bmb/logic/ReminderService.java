@@ -2,7 +2,6 @@ package ru.job4j.bmb.logic;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.model.MoodLog;
 import ru.job4j.bmb.model.User;
 import ru.job4j.bmb.repository.MoodLogRepository;
 import ru.job4j.bmb.repository.UserRepository;
@@ -12,13 +11,11 @@ import ru.job4j.bmb.services.TgUI;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ReminderService {
     private final MoodLogRepository moodLogRepository;
     private final TgUI tgUI;
-    private final List<MoodLog> moodLogList;
     private final UserRepository userRepository;
 
     public ReminderService(MoodLogRepository moodLogRepository,
@@ -26,7 +23,6 @@ public class ReminderService {
                            UserRepository userRepository) {
         this.moodLogRepository = moodLogRepository;
         this.tgUI = tgUI;
-        this.moodLogList = moodLogRepository.findAll();
         this.userRepository = userRepository;
     }
 
@@ -61,20 +57,6 @@ public class ReminderService {
             }
         }
         return users;
-    }
-
-    public List<MoodLog> findMoodLogsForWeek(Long userId, long weekStart) {
-        return moodLogList.stream()
-                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-                .filter(moodLog -> moodLog.getCreatedAt() >= weekStart)
-                .collect(Collectors.toList());
-    }
-
-    public List<MoodLog> findMoodLogsForMonth(Long userId, long monthStart) {
-        return moodLogList.stream()
-                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-                .filter(moodLog -> moodLog.getCreatedAt() >= monthStart)
-                .collect(Collectors.toList());
     }
 }
 

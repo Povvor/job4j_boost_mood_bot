@@ -67,13 +67,13 @@ public class MoodService {
                 .anyMatch(moodLog -> moodLog.getCreatedAt() >= startOfDay);
     }
 
-    public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
-        User user = userRepository.findById(clientId).orElseThrow();
+    public Optional<Content> weekMoodLogCommand(long chatId, User user) {
+        System.out.println("<UNK> <UNK> <UNK> <UNK> <UNK> <UNK> <UNK> <UNK> <UNK>");
         long sevenDays = 7L * 24 * 60 * 60 * 1000;
         Content content = new Content(chatId);
 
         var logs = moodLogRepository.findAll().stream()
-                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() >= sevenDays)
+                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() <= sevenDays)
                 .filter(userToFilter -> userToFilter.getUser().equals(user))
                 .toList();
 
@@ -81,13 +81,12 @@ public class MoodService {
         return Optional.of(content);
     }
 
-    public Optional<Content> monthMoodLogCommand(long chatId, Long clientId) {
-        User user = userRepository.findById(clientId).orElseThrow();
+    public Optional<Content> monthMoodLogCommand(long chatId, User user) {
         long thirtyDays = 30L * 24 * 60 * 60 * 1000;
         Content content = new Content(chatId);
 
         var logs = moodLogRepository.findAll().stream()
-                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() >= thirtyDays)
+                .filter(created -> System.currentTimeMillis() - created.getCreatedAt() <= thirtyDays)
                 .filter(userToFilter -> userToFilter.getUser().equals(user))
                 .toList();
 
@@ -101,7 +100,7 @@ public class MoodService {
         }
         var sb = new StringBuilder(title + ":\n");
         logs.forEach(log -> {
-            String formattedDate = formatter.format(Instant.ofEpochSecond(log.getCreatedAt()));
+            String formattedDate = formatter.format(Instant.ofEpochMilli(log.getCreatedAt()));
             sb.append(formattedDate).append(": ").append(log.getMood().getText()).append("\n");
         });
         return sb.toString();

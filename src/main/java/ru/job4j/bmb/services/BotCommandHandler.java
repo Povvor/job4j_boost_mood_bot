@@ -20,16 +20,14 @@ public class BotCommandHandler {
     private final UserRepository userRepository;
     private final MoodService moodService;
     private final TgUI tgUI;
-    private final ReminderService reminderService;
     private final AdviceService adviceService;
 
     public BotCommandHandler(UserRepository userRepository,
                              MoodService moodService,
-                             TgUI tgUI, ReminderService reminderService, AdviceService adviceService) {
+                             TgUI tgUI, AdviceService adviceService) {
         this.userRepository = userRepository;
         this.moodService = moodService;
         this.tgUI = tgUI;
-        this.reminderService = reminderService;
         this.adviceService = adviceService;
     }
 
@@ -39,8 +37,8 @@ public class BotCommandHandler {
         return switch (message.getText()) {
             case "/info", "/help" -> info(userRepository.findByChatId(message.getChatId()));
             case "/start" -> handleStartCommand(message.getChatId(), message.getFrom().getId());
-            case "/week_mood_log" -> moodService.weekMoodLogCommand(message.getChatId(), message.getFrom().getId());
-            case "/month_mood_log" -> moodService.monthMoodLogCommand(message.getChatId(), message.getFrom().getId());
+            case "/week_mood_log" -> moodService.weekMoodLogCommand(message.getChatId(), userRepository.findByChatId(message.getChatId()));
+            case "/month_mood_log" -> moodService.monthMoodLogCommand(message.getChatId(), userRepository.findByChatId(message.getChatId()));
             case "/award" -> moodService.awards(message.getChatId(), message.getFrom().getId());
             case "/switch_advice" -> adviceService.switchAdvice(userRepository.findByChatId(message.getChatId()));
             case "/daily_advice" -> adviceService.adviceUser(userRepository.findByChatId(message.getChatId()));
