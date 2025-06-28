@@ -57,11 +57,14 @@ public class BotCommandHandler {
     private Optional<Content> info(User user) {
         Content content = new Content(user.getChatId());
         content.setText("""
-                /start: Выбрать настроекние!\s
+                /start: Выбрать настроение!\s
                 /week_mood_log: Получить лог настроения за неделю\s
                 /month_mood_log: Получить лог настроения за месяц\s
                 /award: Получить список достижений\s
-                /daily_advice: получть совет""");
+                /switch_advice: Выключить/Включить ежедневные советы\s
+                /daily_advice: получить совет
+               """);
+        System.out.println(user.isAdvicesEnabled());
         return Optional.of(content);
     }
 

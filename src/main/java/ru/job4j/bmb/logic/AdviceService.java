@@ -92,15 +92,15 @@ public class AdviceService {
      */
     public Optional<Content> switchAdvice(User user) {
         var content = new Content(user.getChatId());
-        System.out.println(user.isAdvicesEnabled());
         user.setAdvicesEnabled(!user.isAdvicesEnabled());
-        System.out.println(user.isAdvicesEnabled());
         if (user.isAdvicesEnabled()) {
             content.setText("Служба Совета дня для вас теперь активна!!!");
         } else {
             content.setText("Служба Совета дня для вас отключена.");
         }
+        userRepository.save(user);
         return Optional.of(content);
+
     }
 
     /**
