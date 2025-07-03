@@ -2,7 +2,7 @@ package ru.job4j.bmb.logic;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.exception.MoodLogIsEmpty;
+import ru.job4j.bmb.exception.MoodLogIsEmptyException;
 import ru.job4j.bmb.model.Advice;
 import ru.job4j.bmb.model.Mood;
 import ru.job4j.bmb.model.MoodLog;
@@ -79,7 +79,7 @@ public class AdviceService {
                 int randomIndex = random.nextInt(badAdvices.size());
                 content.setText(badAdvices.get(randomIndex).getText());
             }
-        } catch (MoodLogIsEmpty e) {
+        } catch (MoodLogIsEmptyException e) {
             content = reminderService.remindUser(user).orElseThrow();
         }
         return Optional.of(content);
@@ -112,6 +112,6 @@ public class AdviceService {
                 .sorted(Comparator.comparing(MoodLog::getCreatedAt).reversed())
                 .map(MoodLog::getMood)
                 .map(Mood::isGood)
-                .findFirst().orElseThrow(MoodLogIsEmpty::new);
+                .findFirst().orElseThrow(MoodLogIsEmptyException::new);
     }
 }
